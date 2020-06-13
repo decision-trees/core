@@ -2,6 +2,7 @@ export enum ErrorCode {
   NotFound,
   InvalidType,
   InvalidAnswer,
+  SessionClosed,
 }
 
 export class DecisionTreeError extends Error {

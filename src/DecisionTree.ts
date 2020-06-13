@@ -2,11 +2,12 @@ import { EntityProvider } from './model/EntityProvider';
 import { Question, Entity, EntityType } from './model';
 import { AnswerValue, AnswerValueComparator } from './model/AnswerValue';
 import { DecisionTreeError, ErrorCode } from './DecisionTreeError';
+import { KeyValuePair } from './model/KeyValuePair';
 
 export class DecisionTree {
   constructor(private provider: EntityProvider) {}
 
-  next(id: string, answerValue: AnswerValue): Entity {
+  next(id: string, answerValue: AnswerValue, scope?: KeyValuePair[]): Entity {
     const entity = this.provider.getEntity(id);
     if (entity) {
       if (entity.type === EntityType.Question) {
