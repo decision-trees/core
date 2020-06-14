@@ -1,3 +1,5 @@
+import { Property } from './Property';
+
 export enum EntityType {
   Question,
   Solution,
@@ -6,4 +8,5 @@ export enum EntityType {
 export interface Entity {
   id: string;
   type: EntityType;
+  properties: Property[];
 }
