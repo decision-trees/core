@@ -22,7 +22,7 @@ const testDate = new Date();
 
 const nop = jest.fn(() => undefined);
 
-fdescribe('DecisionTreeTrustee', () => {
+describe('DecisionTreeTrustee', () => {
   let trustee: DecisionTreeTrustee;
 
   let sessionProvider: SessionProvider;

@@ -1,6 +1,10 @@
-import { Entity } from './Entity';
-import { AnswerValue } from './AnswerValue';
+import { Entity, EntityType } from './Entity';
 
 export interface EntityProvider {
-  getEntity(id: string): Entity | undefined;
+  create(type: EntityType): Entity;
+  read(id: string): Entity | undefined;
+  update(id: string, entity: Entity): Entity;
+  delete(id: string): void;
+
+  list(skip: number, limit: number): Entity[];
 }
