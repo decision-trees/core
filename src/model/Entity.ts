@@ -8,5 +8,5 @@ export enum EntityType {
 export interface Entity {
   id: string;
   type: EntityType;
-  properties: Property[];
+  properties?: Property[];
 }
