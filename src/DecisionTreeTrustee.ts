@@ -5,16 +5,13 @@ import { DecisionTree } from './DecisionTree';
 import { KeyValuePair } from './model/KeyValuePair';
 import { DecisionTreeError, ErrorCode } from './DecisionTreeError';
 import { Action } from './model/Actions';
+import { DecisionTreeEvaluator } from './model/DecsisionTreeEvaluator';
 
 export class DecisionTreeTrustee {
-  private decisionTree: DecisionTree;
-
   constructor(
     private sessionProvider: SessionProvider,
-    entityProvider: EntityProvider
-  ) {
-    this.decisionTree = new DecisionTree(entityProvider);
-  }
+    private decisionTree: DecisionTreeEvaluator
+  ) {}
 
   getSession(id: string): Session {
     return this.sessionProvider.getSession(id);
@@ -39,7 +36,8 @@ export class DecisionTreeTrustee {
   suspendSession(id: string, user: string): Session {
     const session = this.sessionProvider.changeStatus(
       id,
-      SessionStatus.Suspended
+      SessionStatus.Suspended,
+      user
     );
     this.sessionProvider.addEntry(session.id, {
       action: Action.Suspend,
@@ -52,7 +50,8 @@ export class DecisionTreeTrustee {
   resumeSession(id: string, user: string): Session {
     const session = this.sessionProvider.changeStatus(
       id,
-      SessionStatus.Resumed
+      SessionStatus.Resumed,
+      user
     );
     this.sessionProvider.addEntry(session.id, {
       action: Action.Resume,
@@ -63,7 +62,11 @@ export class DecisionTreeTrustee {
   }
 
   closeSession(id: string, user: string): Session {
-    const session = this.sessionProvider.changeStatus(id, SessionStatus.Closed);
+    const session = this.sessionProvider.changeStatus(
+      id,
+      SessionStatus.Closed,
+      user
+    );
     this.sessionProvider.addEntry(session.id, {
       action: Action.Close,
       created: new Date(),
@@ -89,7 +92,7 @@ export class DecisionTreeTrustee {
     if (session.status === SessionStatus.Suspended) {
       this.resumeSession(sessionId, user);
     }
-    session = this.sessionProvider.mergeScope(sessionId, scope);
+    session = this.sessionProvider.mergeScope(sessionId, scope, user);
     const nextEntity = this.decisionTree.next(entityId, answer, session.scope);
     if (nextEntity != null) {
       this.sessionProvider.addEntry(sessionId, {

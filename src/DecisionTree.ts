@@ -3,8 +3,9 @@ import { Question, Entity, EntityType } from './model';
 import { AnswerValue, AnswerValueComparator } from './model/AnswerValue';
 import { DecisionTreeError, ErrorCode } from './DecisionTreeError';
 import { KeyValuePair } from './model/KeyValuePair';
+import { DecisionTreeEvaluator } from './model/DecsisionTreeEvaluator';
 
-export class DecisionTree {
+export class DecisionTree implements DecisionTreeEvaluator {
   constructor(private provider: EntityProvider) {}
 
   next(id: string, answerValue: AnswerValue, scope?: KeyValuePair[]): Entity {

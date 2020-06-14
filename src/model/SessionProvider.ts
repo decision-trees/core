@@ -18,8 +18,8 @@ export interface SessionProvider {
     scope?: KeyValuePair[],
     parentId?: string
   ): Session;
-  changeStatus(id: string, status: SessionStatus): Session;
-  mergeScope(id: string, scope: KeyValuePair[]): Session;
+  changeStatus(id: string, status: SessionStatus, user: string): Session;
+  mergeScope(id: string, scope: KeyValuePair[], user: string): Session;
 
   currentHistoryEntry(id: string): SessionHistoryEntry;
   getHistory(id: string): SessionHistoryEntry[];
