@@ -35,10 +35,7 @@ export function AnswerValueComparator(value: AnswerValue, other: AnswerValue) {
         range.min > otherRange.max
       ) {
         return 1;
-      } else if (
-        (range.min > otherRange.min && range.max >= otherRange.max) ||
-        range.max < otherRange.min
-      ) {
+      } else if (range.min > otherRange.min && range.max >= otherRange.max) {
         return -1;
       }
     } else if (value.range && !other.range) {

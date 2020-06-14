@@ -2,10 +2,18 @@ import {
   AnswerValueComparator,
   AnswerValueSingle,
   AnswerValueRange,
+  AnswerValue,
 } from './AnswerValue';
 import { ValueType } from './ValueType';
 
 describe('AnswerValueComparator', () => {
+  it('should compare null values to lesser 0 ', () => {
+    const result = AnswerValueComparator(
+      (null as unknown) as AnswerValue,
+      (null as unknown) as AnswerValue
+    );
+    expect(result).toBeLessThan(0);
+  });
   it('should compare same integer values to 0 ', () => {
     const value = new AnswerValueSingle(ValueType.integer, 10);
     const other = new AnswerValueSingle(ValueType.integer, 10);
@@ -67,5 +75,32 @@ describe('AnswerValueComparator', () => {
     const other = new AnswerValueSingle(ValueType.text, 'a');
     const result = AnswerValueComparator(value, other);
     expect(result).toBeLessThan(0);
+  });
+
+  it('should compare integer single value with other range to be 0', () => {
+    const value = new AnswerValueRange(ValueType.integer, 5, 20);
+    const other = new AnswerValueSingle(ValueType.integer, 6);
+    const result = AnswerValueComparator(value, other);
+    expect(result).toBe(0);
+  });
+
+  it('should compare integer single value with other range to be greater 0', () => {
+    const value = new AnswerValueRange(ValueType.integer, 5, 20);
+    const other = new AnswerValueSingle(ValueType.integer, 21);
+    const result = AnswerValueComparator(value, other);
+    expect(result).toBeGreaterThan(0);
+  });
+
+  it('should compare integer single value with other range to be lesser 0', () => {
+    const value = new AnswerValueRange(ValueType.integer, 5, 20);
+    const other = new AnswerValueSingle(ValueType.integer, 4);
+    const result = AnswerValueComparator(value, other);
+    expect(result).toBeLessThan(0);
+  });
+
+  it('should correct inverted range min max values', () => {
+    const value = new AnswerValueRange(ValueType.integer, 5, 1);
+    expect(value.min).toBe(1);
+    expect(value.max).toBe(5);
   });
 });
