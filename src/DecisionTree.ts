@@ -8,8 +8,12 @@ import { DecisionTreeEvaluator } from './model/DecsisionTreeEvaluator';
 export class DecisionTree implements DecisionTreeEvaluator {
   constructor(private provider: EntityProvider) {}
 
-  next(id: string, answerValue: AnswerValue, scope?: KeyValuePair[]): Entity {
-    const entity = this.provider.read(id);
+  async next(
+    id: string,
+    answerValue: AnswerValue,
+    scope?: KeyValuePair[]
+  ): Promise<Entity> {
+    const entity = await this.provider.read(id);
     if (entity) {
       if (entity.type === EntityType.Question) {
         const question = entity as Question;
@@ -18,7 +22,7 @@ export class DecisionTree implements DecisionTreeEvaluator {
         );
         // console.log(id, answer, answerValue);
         if (answer) {
-          const result = this.provider.read(answer.targetId);
+          const result = await this.provider.read(answer.targetId);
           if (result) {
             return result;
           }

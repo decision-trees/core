@@ -13,18 +13,23 @@ export class DecisionTreeTrustee {
     private decisionTree: DecisionTreeEvaluator
   ) {}
 
-  getSession(id: string): Session {
+  getSession(id: string): Promise<Session> {
     return this.sessionProvider.getSession(id);
   }
 
-  openSession(
+  async openSession(
     user: string,
     target = 'anonymous',
     scope?: KeyValuePair[],
     parentId?: string
-  ): Session {
-    const session = this.sessionProvider.open(user, target, scope, parentId);
-    this.sessionProvider.addEntry(session.id, {
+  ): Promise<Session> {
+    const session = await this.sessionProvider.open(
+      user,
+      target,
+      scope,
+      parentId
+    );
+    await this.sessionProvider.addEntry(session.id, {
       action: Action.Open,
       scope,
       created: new Date(),
@@ -33,13 +38,13 @@ export class DecisionTreeTrustee {
     return session;
   }
 
-  suspendSession(id: string, user: string): Session {
-    const session = this.sessionProvider.changeStatus(
+  async suspendSession(id: string, user: string): Promise<Session> {
+    const session = await this.sessionProvider.changeStatus(
       id,
       SessionStatus.Suspended,
       user
     );
-    this.sessionProvider.addEntry(session.id, {
+    await this.sessionProvider.addEntry(session.id, {
       action: Action.Suspend,
       created: new Date(),
       user,
@@ -47,13 +52,13 @@ export class DecisionTreeTrustee {
     return session;
   }
 
-  resumeSession(id: string, user: string): Session {
-    const session = this.sessionProvider.changeStatus(
+  async resumeSession(id: string, user: string): Promise<Session> {
+    const session = await this.sessionProvider.changeStatus(
       id,
       SessionStatus.Resumed,
       user
     );
-    this.sessionProvider.addEntry(session.id, {
+    await this.sessionProvider.addEntry(session.id, {
       action: Action.Resume,
       created: new Date(),
       user,
@@ -61,13 +66,13 @@ export class DecisionTreeTrustee {
     return session;
   }
 
-  closeSession(id: string, user: string): Session {
-    const session = this.sessionProvider.changeStatus(
+  async closeSession(id: string, user: string): Promise<Session> {
+    const session = await this.sessionProvider.changeStatus(
       id,
       SessionStatus.Closed,
       user
     );
-    this.sessionProvider.addEntry(session.id, {
+    await this.sessionProvider.addEntry(session.id, {
       action: Action.Close,
       created: new Date(),
       user,
@@ -75,14 +80,14 @@ export class DecisionTreeTrustee {
     return session;
   }
 
-  nextEntity(
+  async nextEntity(
     sessionId: string,
     entityId: string,
     answer: AnswerValue,
     scope: KeyValuePair[],
     user: string
-  ): Entity | undefined {
-    let session = this.getSession(sessionId);
+  ): Promise<Entity | undefined> {
+    let session = await this.getSession(sessionId);
     if (session.status === SessionStatus.Closed) {
       throw new DecisionTreeError(
         ErrorCode.SessionClosed,
@@ -90,12 +95,16 @@ export class DecisionTreeTrustee {
       );
     }
     if (session.status === SessionStatus.Suspended) {
-      this.resumeSession(sessionId, user);
+      await this.resumeSession(sessionId, user);
     }
-    session = this.sessionProvider.mergeScope(sessionId, scope, user);
-    const nextEntity = this.decisionTree.next(entityId, answer, session.scope);
+    session = await this.sessionProvider.mergeScope(sessionId, scope, user);
+    const nextEntity = await this.decisionTree.next(
+      entityId,
+      answer,
+      session.scope
+    );
     if (nextEntity != null) {
-      this.sessionProvider.addEntry(sessionId, {
+      await this.sessionProvider.addEntry(sessionId, {
         action: Action.Next,
         entityId,
         answer,

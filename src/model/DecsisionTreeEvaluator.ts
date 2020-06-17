@@ -3,5 +3,5 @@ import { KeyValuePair } from './KeyValuePair';
 import { Entity } from './Entity';
 
 export interface DecisionTreeEvaluator {
-  next(id: string, answer: AnswerValue, scope: KeyValuePair[]): Entity;
+  next(id: string, answer: AnswerValue, scope: KeyValuePair[]): Promise<Entity>;
 }

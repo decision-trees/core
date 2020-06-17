@@ -1,10 +1,11 @@
 import { Entity, EntityType } from './Entity';
+import { EntityListResult } from './EntityListResult';
 
 export interface EntityProvider {
-  create(type: EntityType): Entity;
-  read(id: string): Entity | undefined;
-  update(id: string, entity: Entity): Entity;
-  delete(id: string): void;
+  create(type: EntityType): Promise<Entity>;
+  read(id: string): Promise<Entity | undefined>;
+  update(id: string, entity: Entity): Promise<Entity>;
+  delete(id: string): Promise<void>;
 
-  list(skip: number, limit: number): Entity[];
+  list(skip: number, limit: number): Promise<EntityListResult>;
 }

@@ -46,40 +46,40 @@ describe('DecisionTree', () => {
     decisionTree = new DecisionTree(provider);
   });
 
-  it('should calculate next entity to be question with Id b', () => {
-    const entity = decisionTree.next(
+  it('should calculate next entity to be question with Id b', async () => {
+    const entity = await decisionTree.next(
       'a',
       new AnswerValueSingle(ValueType.integer, 1)
     );
     expect(entity.type).toBe(EntityType.Question);
     expect(entity.id).toBe('b');
   });
-  it('should calculate from b next entity to be solution with Id d', () => {
-    const entity = decisionTree.next(
+  it('should calculate from b next entity to be solution with Id d', async () => {
+    const entity = await decisionTree.next(
       'b',
       new AnswerValueSingle(ValueType.integer, 1)
     );
     expect(entity.type).toBe(EntityType.Solution);
     expect(entity.id).toBe('d');
   });
-  it('should calculate from b next entity to be solution with Id e', () => {
-    const entity = decisionTree.next(
+  it('should calculate from b next entity to be solution with Id e', async () => {
+    const entity = await decisionTree.next(
       'b',
       new AnswerValueSingle(ValueType.integer, 2)
     );
     expect(entity.type).toBe(EntityType.Solution);
     expect(entity.id).toBe('e');
   });
-  it('should calculate from c next entity to be solution with Id e', () => {
-    const entity = decisionTree.next(
+  it('should calculate from c next entity to be solution with Id e', async () => {
+    const entity = await decisionTree.next(
       'c',
       new AnswerValueSingle(ValueType.integer, 3)
     );
     expect(entity.type).toBe(EntityType.Solution);
     expect(entity.id).toBe('e');
   });
-  it('should calculate from c next entity to be solution with Id d', () => {
-    const entity = decisionTree.next(
+  it('should calculate from c next entity to be solution with Id d', async () => {
+    const entity = await decisionTree.next(
       'c',
       new AnswerValueSingle(ValueType.integer, 4)
     );
@@ -87,25 +87,25 @@ describe('DecisionTree', () => {
     expect(entity.id).toBe('d');
   });
 
-  it('should fail with ErrorCode.NotFound', () => {
+  it('should fail with ErrorCode.NotFound', async () => {
     try {
-      decisionTree.next('f', new AnswerValueSingle(ValueType.integer, 1));
+      await decisionTree.next('f', new AnswerValueSingle(ValueType.integer, 1));
       expect('should').toBe('not reached');
     } catch (e) {
       expect(e.code).toBe(ErrorCode.NotFound);
     }
   });
-  it('should fail with ErrorCode.InvalidType', () => {
+  it('should fail with ErrorCode.InvalidType', async () => {
     try {
-      decisionTree.next('d', new AnswerValueSingle(ValueType.integer, 1));
+      await decisionTree.next('d', new AnswerValueSingle(ValueType.integer, 1));
       expect('should').toBe('not reached');
     } catch (e) {
       expect(e.code).toBe(ErrorCode.InvalidType);
     }
   });
-  it('should fail with ErrorCode.InvalidAnswer', () => {
+  it('should fail with ErrorCode.InvalidAnswer', async () => {
     try {
-      decisionTree.next('a', new AnswerValueSingle(ValueType.integer, 3));
+      await decisionTree.next('a', new AnswerValueSingle(ValueType.integer, 3));
       expect('should').toBe('not reached');
     } catch (e) {
       expect(e.code).toBe(ErrorCode.InvalidAnswer);

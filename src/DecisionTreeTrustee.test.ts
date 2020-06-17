@@ -42,7 +42,7 @@ describe('DecisionTreeTrustee', () => {
     trustee = new DecisionTreeTrustee(sessionProvider, decsisionTreeEvaluator);
   });
 
-  it('should open session', () => {
+  it('should open session', async () => {
     sessionProvider.open = jest.fn(
       (
         user: string,
@@ -50,7 +50,7 @@ describe('DecisionTreeTrustee', () => {
         scope?: KeyValuePair[],
         parentId?: string
       ) => {
-        return {
+        return Promise.resolve({
           id: 'newSession',
           status: SessionStatus.Opened,
           creator: user,
@@ -58,17 +58,18 @@ describe('DecisionTreeTrustee', () => {
           scope,
           parentId,
           created: testDate,
-        } as Session;
+        } as Session);
       }
     );
     let created;
     sessionProvider.addEntry = jest.fn(
       (id: string, entry: SessionHistoryEntry) => {
         created = entry.created;
+        return Promise.resolve(void 0);
       }
     );
     const scope = [{ key: 'some', value: 'test data' }];
-    const session = trustee.openSession(testUser, testTarget, scope);
+    const session = await trustee.openSession(testUser, testTarget, scope);
     expect((sessionProvider.open as jest.Mock).mock.calls.length).toBe(1);
     expect((sessionProvider.addEntry as jest.Mock).mock.calls.length).toBe(1);
     expect(sessionProvider.addEntry).toHaveBeenCalledWith('newSession', {
@@ -86,19 +87,20 @@ describe('DecisionTreeTrustee', () => {
     expect(session.created).toBe(testDate);
   });
 
-  it('should change session status to suspended', () => {
+  it('should change session status to suspended', async () => {
     sessionProvider.changeStatus = jest.fn(
       (id: string, status: SessionStatus) => {
-        return { id, status } as Session;
+        return Promise.resolve({ id, status } as Session);
       }
     );
     let created;
     sessionProvider.addEntry = jest.fn(
       (id: string, entry: SessionHistoryEntry) => {
         created = entry.created;
+        return Promise.resolve(void 0);
       }
     );
-    const session = trustee.suspendSession('mySession', testUser);
+    const session = await trustee.suspendSession('mySession', testUser);
     expect((sessionProvider.changeStatus as jest.Mock).mock.calls.length).toBe(
       1
     );
@@ -112,19 +114,20 @@ describe('DecisionTreeTrustee', () => {
     expect(session.status).toBe(SessionStatus.Suspended);
   });
 
-  it('should change session status to resumed', () => {
+  it('should change session status to resumed', async () => {
     sessionProvider.changeStatus = jest.fn(
       (id: string, status: SessionStatus) => {
-        return { id, status } as Session;
+        return Promise.resolve({ id, status } as Session);
       }
     );
     let created;
     sessionProvider.addEntry = jest.fn(
       (id: string, entry: SessionHistoryEntry) => {
         created = entry.created;
+        return Promise.resolve(void 0);
       }
     );
-    const session = trustee.resumeSession('mySession', testUser);
+    const session = await trustee.resumeSession('mySession', testUser);
     expect((sessionProvider.changeStatus as jest.Mock).mock.calls.length).toBe(
       1
     );
@@ -138,19 +141,20 @@ describe('DecisionTreeTrustee', () => {
     expect(session.status).toBe(SessionStatus.Resumed);
   });
 
-  it('should change session status to closed', () => {
+  it('should change session status to closed', async () => {
     sessionProvider.changeStatus = jest.fn(
       (id: string, status: SessionStatus) => {
-        return { id, status } as Session;
+        return Promise.resolve({ id, status } as Session);
       }
     );
     let created;
     sessionProvider.addEntry = jest.fn(
       (id: string, entry: SessionHistoryEntry) => {
         created = entry.created;
+        return Promise.resolve(void 0);
       }
     );
-    const session = trustee.closeSession('mySession', testUser);
+    const session = await trustee.closeSession('mySession', testUser);
     expect((sessionProvider.changeStatus as jest.Mock).mock.calls.length).toBe(
       1
     );
@@ -164,14 +168,18 @@ describe('DecisionTreeTrustee', () => {
     expect(session.status).toBe(SessionStatus.Closed);
   });
 
-  it('should evaluate next entity', () => {
+  it('should evaluate next entity', async () => {
     decsisionTreeEvaluator.next = jest.fn(
-      (id: string, answer: AnswerValue, scope: KeyValuePair[]): Entity => {
-        return ({
+      (
+        id: string,
+        answer: AnswerValue,
+        scope: KeyValuePair[]
+      ): Promise<Entity> => {
+        return Promise.resolve(({
           id: 'expectedQuestion',
           type: EntityType.Question,
           answers: [],
-        } as unknown) as Question;
+        } as unknown) as Question);
       }
     );
     const session = ({
@@ -180,22 +188,24 @@ describe('DecisionTreeTrustee', () => {
       scope: [],
     } as unknown) as Session;
     sessionProvider.getSession = jest.fn((id: string) => {
-      return session;
+      return Promise.resolve(session);
     });
     sessionProvider.mergeScope = jest.fn(
-      (id: string, scope: KeyValuePair[], user: string): Session => ({
-        ...session,
-        scope: scope,
-      })
+      (id: string, scope: KeyValuePair[], user: string): Promise<Session> =>
+        Promise.resolve({
+          ...session,
+          scope: scope,
+        })
     );
     let created;
     sessionProvider.addEntry = jest.fn(
       (id: string, entry: SessionHistoryEntry) => {
         created = entry.created;
+        return Promise.resolve(void 0);
       }
     );
     const scope = [{ key: 'some', value: 'test data' }];
-    const entity = trustee.nextEntity(
+    const entity = await trustee.nextEntity(
       'mySession',
       'evaluateNext',
       new AnswerValueSingle(ValueType.integer, 1),
