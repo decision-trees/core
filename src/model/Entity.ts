@@ -1,8 +1,8 @@
 import { Property } from './Property';
 
 export enum EntityType {
-  Question,
-  Solution,
+  Question = 'question',
+  Solution = 'solution',
 }
 
 export interface Entity {

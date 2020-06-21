@@ -3,6 +3,7 @@ export enum ErrorCode {
   InvalidType,
   InvalidAnswer,
   SessionClosed,
+  Unexpected,
 }
 
 export class DecisionTreeError extends Error {

@@ -1,7 +1,7 @@
 export enum ValueType {
-  text,
-  integer,
-  float,
-  date,
-  timestamp,
+  text = 'text',
+  integer = 'integer',
+  float = 'float',
+  date = 'date',
+  timestamp = 'timestamp',
 }

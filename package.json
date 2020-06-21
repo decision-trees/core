@@ -2,16 +2,19 @@
   "name": "@decision-trees/core",
   "version": "0.0.1",
   "description": "",
-  "main": "lib/index.js",
-  "scripts": {
-    "build": "tsc",
-    "build:watch": "NODE_ENV=development nodemon --watch 'src/**/*.ts' --exec tsc",
-    "test": "jest",
-    "coverage": "jest --coverage"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/decision-trees/core.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "NODE_ENV=development nodemon",
+    "test": "jest",
+    "coverage": "jest --coverage"
   },
   "keywords": [
     "decision-tree"
